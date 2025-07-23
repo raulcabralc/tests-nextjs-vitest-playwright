@@ -3,17 +3,17 @@ import { validateTodoTask } from "../schemas/validate-todo-task";
 import { makeNewTodo } from "./make-new-todo";
 import { Todo } from "../schemas/todo.contract";
 
-type InvalidTodo = {
+export type InvalidTodo = {
   success: false;
   errors: string[];
 };
 
-type ValidTodo = {
+export type ValidTodo = {
   success: true;
   data: Todo;
 };
 
-type MixedValidationTodo = ValidTodo | InvalidTodo;
+export type MixedValidationTodo = ValidTodo | InvalidTodo;
 
 export function makeValidatedTodo(task: string): MixedValidationTodo {
   const cleanTask = sanitizeStr(task);
