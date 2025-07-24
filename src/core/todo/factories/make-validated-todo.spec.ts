@@ -1,8 +1,5 @@
-import {
-  InvalidTodo,
-  makeValidatedTodo,
-  ValidTodo,
-} from "./make-validated-todo";
+import { makeValidatedTodo } from "./make-validated-todo";
+import { ValidTodo, InvalidTodo } from "../schemas/todo.contract";
 import * as SanitizeStrMod from "@/core/helpers/sanitize-str";
 import * as ValidateTodoTaskMod from "../schemas/validate-todo-task";
 import * as makeNewTodoMod from "./make-new-todo";
@@ -37,8 +34,8 @@ describe("makeValidatedTodo (unit)", () => {
 
     const result = makeValidatedTodo(task) as ValidTodo;
 
-    expect(result.data.id).toBe("algum-id");
-    expect(result.data.task).toBe("abcd");
+    expect(result.todo.id).toBe("algum-id");
+    expect(result.todo.task).toBe("abcd");
     expect(result.success).toBe(true);
   });
 
