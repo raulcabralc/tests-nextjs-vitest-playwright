@@ -41,11 +41,39 @@ describe("DrizzleTodoRepository (integration)", () => {
   });
 
   describe("create", () => {
-    test("creates a todo if all the data is valid", async () => {});
+    test("creates a todo if all the data is valid", async () => {
+      const { repository, todos } = makeTestTodoRepository();
+      const newTodo = await repository.create(todos[0]);
+      expect(newTodo).toStrictEqual({ success: true, todo: todos[0] });
+    });
 
-    test("fails if there is a task with the same name in the table", async () => {});
+    test("fails if there is a task with the same name in the table", async () => {
+      const { repository, todos } = makeTestTodoRepository();
+      await repository.create(todos[0]);
+      const secondTodo = await repository.create({
+        id: "99",
+        task: todos[0].task,
+        createdAt: "date 99",
+      });
+      expect(secondTodo).toStrictEqual({
+        success: false,
+        errors: ["todo already exists with this name or ID"],
+      });
+    });
 
-    test("fails if there is a task with the same ID in the table", async () => {});
+    test("fails if there is a task with the same ID in the table", async () => {
+      const { repository, todos } = makeTestTodoRepository();
+      await repository.create(todos[0]);
+      const secondTodo = await repository.create({
+        id: todos[0].id,
+        task: "task 99",
+        createdAt: "date 99",
+      });
+      expect(secondTodo).toStrictEqual({
+        success: false,
+        errors: ["todo already exists with this name or ID"],
+      });
+    });
   });
 
   describe("remove", () => {

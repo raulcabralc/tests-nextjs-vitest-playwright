@@ -5,13 +5,14 @@ import { eq } from "drizzle-orm";
 export function makeTestTodoRepository() {
   const { db, todoTable } = drizzleDatabase;
   const repository = new DrizzleTodoRepository(db);
+  const todos = makeTestTodos();
 
   const insertTodoDb = () => db.insert(todoTable);
   const deleteTodoDb = (id: string) =>
     db.delete(todoTable).where(eq(todoTable.id, id));
   const deleteTodoNoWhere = () => db.delete(todoTable);
 
-  return { repository, insertTodoDb, deleteTodoDb, deleteTodoNoWhere };
+  return { todos, repository, insertTodoDb, deleteTodoDb, deleteTodoNoWhere };
 }
 
 export const insertTestTodos = async () => {
