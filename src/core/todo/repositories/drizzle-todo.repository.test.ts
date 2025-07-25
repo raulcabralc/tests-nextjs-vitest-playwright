@@ -43,18 +43,22 @@ describe("DrizzleTodoRepository (integration)", () => {
   describe("create", () => {
     test("creates a todo if all the data is valid", async () => {
       const { repository, todos } = makeTestTodoRepository();
+
       const newTodo = await repository.create(todos[0]);
+
       expect(newTodo).toStrictEqual({ success: true, todo: todos[0] });
     });
 
     test("fails if there is a task with the same name in the table", async () => {
       const { repository, todos } = makeTestTodoRepository();
+
       await repository.create(todos[0]);
       const secondTodo = await repository.create({
         id: "99",
         task: todos[0].task,
         createdAt: "date 99",
       });
+
       expect(secondTodo).toStrictEqual({
         success: false,
         errors: ["todo already exists with this name or ID"],
@@ -63,12 +67,14 @@ describe("DrizzleTodoRepository (integration)", () => {
 
     test("fails if there is a task with the same ID in the table", async () => {
       const { repository, todos } = makeTestTodoRepository();
+
       await repository.create(todos[0]);
       const secondTodo = await repository.create({
         id: todos[0].id,
         task: "task 99",
         createdAt: "date 99",
       });
+
       expect(secondTodo).toStrictEqual({
         success: false,
         errors: ["todo already exists with this name or ID"],
@@ -77,8 +83,25 @@ describe("DrizzleTodoRepository (integration)", () => {
   });
 
   describe("remove", () => {
-    test("deletes a todo if it exists", async () => {});
+    test("deletes a todo if it exists", async () => {
+      const { repository, todos } = makeTestTodoRepository();
 
-    test("fails to delete the todo if it doesn't exists", async () => {});
+      await repository.create(todos[0]);
+      await repository.remove(todos[0].id);
+
+      const result = await repository.findAll();
+      expect(result).toStrictEqual([]);
+    });
+
+    test("fails to delete the todo if it doesn't exists", async () => {
+      const { repository, todos } = makeTestTodoRepository();
+
+      const removedTodo = await repository.remove(todos[4].id);
+
+      expect(removedTodo).toStrictEqual({
+        success: false,
+        errors: ["todo was not found"],
+      });
+    });
   });
 });
