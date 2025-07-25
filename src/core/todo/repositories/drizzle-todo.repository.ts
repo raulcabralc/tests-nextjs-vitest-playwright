@@ -10,11 +10,11 @@ export class DrizzleTodoRepository implements TodoRepository {
   }
 
   async findAll(): Promise<Todo[]> {
-    const todos = await this.database.query.todo.findMany({
+    const all = await this.database.query.todo.findMany({
       orderBy: (todo, { desc }) => [desc(todo.createdAt), desc(todo.task)],
     });
 
-    return todos;
+    return all;
   }
 
   async create(todoData: Todo): Promise<TodoDto> {
