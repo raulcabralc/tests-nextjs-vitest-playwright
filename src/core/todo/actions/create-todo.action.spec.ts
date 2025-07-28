@@ -9,7 +9,7 @@ vi.mock("next/cache", () => {
   };
 });
 
-describe("createTodoAction", () => {
+describe("createTodoAction (unit)", () => {
   test("should call createTodoUseCase with the right values", async () => {
     const { createTodoUseCaseSpy, successResult } = makeMocks();
     const expectedParamCall = "any task";
