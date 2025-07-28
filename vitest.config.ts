@@ -64,6 +64,7 @@ export default defineConfig({
         "**/*.type.{ts,tsx}",
         "**/*.types.{ts,tsx}",
         "**/*.contract.{ts,tsx}",
+        "**/*.contract.*{ts,tsx}",
         "**/*.protocol.{ts,tsx}",
         "**/*.interface.{ts,tsx}",
 
@@ -84,6 +85,8 @@ export default defineConfig({
         "**/*.stories.{ts,tsx}",
         "**/stories/**",
         "**/__stories__/**",
+
+        "**/page.tsx",
       ],
     },
   },
