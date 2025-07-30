@@ -231,5 +231,63 @@ test.describe("<Home /> (E2E)", () => {
       }
     });
   });
+
   // Erros
+
+  test.describe("Errors", () => {
+    test("should show error if task has 3 or less characters", async ({
+      page,
+    }) => {
+      const { input, btn } = getAll(page);
+
+      await input.fill("abc");
+      await btn.click();
+
+      const errorText = "description should have more than 3 characters";
+      const error = page.getByText(errorText);
+
+      await error.waitFor({ state: "attached" });
+    });
+
+    test("should show error if task name is already registered", async ({
+      page,
+    }) => {
+      const { input, btn } = getAll(page);
+
+      await input.fill("abcd");
+      await btn.click();
+
+      await input.fill("abcd");
+      await btn.click();
+
+      const errorText = "todo already exists with this name or ID";
+      const error = page.getByText(errorText);
+
+      await error.waitFor({ state: "attached" });
+      await expect(error).toBeVisible();
+    });
+
+    test("should remove error from screen when user fixes it", async ({
+      page,
+    }) => {
+      const { input, btn } = getAll(page);
+
+      await input.fill("abcd");
+      await btn.click();
+
+      await input.fill("abcd");
+      await btn.click();
+
+      const errorText = "todo already exists with this name or ID";
+      const error = page.getByText(errorText);
+
+      await error.waitFor({ state: "attached" });
+      await expect(error).toBeVisible();
+
+      await input.fill("abcde diff");
+      await btn.click();
+
+      await expect(error).not.toBeVisible();
+    });
+  });
 });
