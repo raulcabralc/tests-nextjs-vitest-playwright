@@ -1,4 +1,7 @@
-import { makeTestTodoRepository } from "@/core/tests/helpers/make-test-todo-repository";
+import {
+  insertTestTodos,
+  makeTestTodoRepository,
+} from "@/core/tests/helpers/make-test-todo-repository";
 import { test, expect, Page } from "@playwright/test";
 
 const homeUrl = "/";
@@ -167,5 +170,66 @@ test.describe("<Home /> (E2E)", () => {
   });
 
   // Exclusão
+
+  test.describe("Delete", () => {
+    test("should allow a Todo to be deleted", async ({ page }) => {
+      const todos = await insertTestTodos();
+      await page.reload();
+
+      const item = page
+        .getByRole("listitem")
+        .filter({ hasText: todos[0].task });
+
+      await expect(item).toBeVisible();
+
+      const deleteBtn = item.getByRole("button");
+      await deleteBtn.click();
+
+      await item.waitFor({ state: "detached" });
+      await expect(item).not.toBeVisible();
+    });
+
+    test("should allow all Todos to be deleted", async ({ page }) => {
+      const todos = await insertTestTodos();
+      await page.reload();
+
+      for (const todo of todos) {
+        const item = page.getByRole("listitem").filter({ hasText: todo.task });
+        const deleteBtn = item.getByRole("button");
+
+        await expect(item).toBeVisible();
+
+        await deleteBtn.click();
+
+        await item.waitFor({ state: "detached" });
+        await expect(item).not.toBeVisible();
+      }
+    });
+
+    test("should deactivate list items while sending action", async ({
+      page,
+    }) => {
+      await insertTestTodos();
+      await page.reload();
+
+      const item = page.getByRole("listitem").first();
+      const itemText = await item.textContent();
+
+      if (!itemText) {
+        throw new Error("item text is empty");
+      }
+
+      const deleteBtn = item.getByRole("button");
+      await deleteBtn.click();
+
+      const allDeleteBtn = await page
+        .getByRole("button", { name: /^apagar/i })
+        .all();
+
+      for (const btn of allDeleteBtn) {
+        await expect(btn).toBeDisabled();
+      }
+    });
+  });
   // Erros
 });
