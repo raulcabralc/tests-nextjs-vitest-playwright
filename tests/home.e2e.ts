@@ -11,13 +11,17 @@ const titleHtml = "Testes com Vitest e Playwright";
 
 const getHeading = (p: Page) => p.getByRole("heading", { name: heading });
 const getInput = (p: Page) => p.getByRole("textbox", { name: input });
+const getInputBusy = (p: Page) =>
+  p.getByRole("textbox", { name: input, disabled: true });
 const getBtn = (p: Page) => p.getByRole("button", { name: button });
-const getBtnBusy = (p: Page) => p.getByRole("button", { name: buttonBusy });
+const getBtnBusy = (p: Page) =>
+  p.getByRole("button", { name: buttonBusy, disabled: true });
 
 const getAll = (p: Page) => {
   return {
     heading: getHeading(p),
     input: getInput(p),
+    inputBusy: getInputBusy(p),
     btn: getBtn(p),
     btnBusy: getBtnBusy(p),
   };
@@ -111,6 +115,54 @@ test.describe("<Home /> (E2E)", () => {
 
       expect(todoOneItem).toBeVisible();
       expect(todoTwoItem).toBeVisible();
+    });
+
+    test("should deactivate button when creating Todo", async ({ page }) => {
+      const { input, btn } = getAll(page);
+
+      await input.fill(newTodoText);
+      await btn.click();
+
+      await expect(getBtnBusy(page)).toBeDisabled();
+
+      const createdTodo = page
+        .getByRole("listitem")
+        .filter({ hasText: newTodoText });
+
+      await expect(createdTodo).toBeVisible();
+      await expect(btn).toBeEnabled();
+    });
+
+    test("should deactivate input when creating Todo", async ({ page }) => {
+      const { input, btn } = getAll(page);
+
+      await input.fill(newTodoText);
+      await btn.click();
+
+      await expect(getInputBusy(page)).toBeDisabled();
+
+      const createdTodo = page
+        .getByRole("listitem")
+        .filter({ hasText: newTodoText });
+
+      await expect(createdTodo).toBeVisible();
+      await expect(input).toBeEnabled();
+    });
+
+    test("should clear input after the creation of a Todo", async ({
+      page,
+    }) => {
+      const { input, btn } = getAll(page);
+
+      await input.fill(newTodoText);
+      await btn.click();
+
+      const createdTodo = page
+        .getByRole("listitem")
+        .filter({ hasText: newTodoText });
+
+      await expect(createdTodo).toBeVisible();
+      await expect(input).toHaveText("");
     });
   });
 
